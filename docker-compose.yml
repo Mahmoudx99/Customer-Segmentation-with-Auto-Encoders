@@ -1,0 +1,92 @@
+version: '3.8'
+
+services:
+  # Main training service
+  train:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: customer-segmentation:latest
+    container_name: customer-segmentation-train
+    volumes:
+      # Mount data directory for persistence
+      - ./data:/app/data
+      # Mount models directory to save trained models
+      - ./models:/app/models
+      # Mount results directory to save outputs
+      - ./results:/app/results
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TF_CPP_MIN_LOG_LEVEL=2
+    command: python train_pipeline.py
+    restart: "no"
+
+  # Prediction service
+  predict:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: customer-segmentation:latest
+    container_name: customer-segmentation-predict
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./results:/app/results
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TF_CPP_MIN_LOG_LEVEL=2
+    command: python predict.py --input data/raw/Test.csv --output results/predictions.csv
+    restart: "no"
+    depends_on:
+      - train
+
+  # Jupyter notebook service for interactive analysis
+  jupyter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: customer-segmentation:latest
+    container_name: customer-segmentation-jupyter
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./results:/app/results
+      - ./notebooks:/app/notebooks
+      - ./src:/app/src
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TF_CPP_MIN_LOG_LEVEL=2
+    command: >
+      jupyter notebook
+      --ip=0.0.0.0
+      --port=8888
+      --no-browser
+      --allow-root
+      --NotebookApp.token=''
+      --NotebookApp.password=''
+    restart: "no"
+
+  # Development service with bash shell
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: customer-segmentation:latest
+    container_name: customer-segmentation-dev
+    volumes:
+      - ./:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TF_CPP_MIN_LOG_LEVEL=2
+    command: bash
+    stdin_open: true
+    tty: true
+    restart: "no"
+
+# Define volumes for data persistence
+volumes:
+  data:
+  models:
+  results:
