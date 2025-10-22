@@ -32,20 +32,73 @@ This project implements customer segmentation using Auto Encoders and clustering
 │   └── processed/        # Preprocessed datasets
 ├── notebooks/            # Jupyter notebooks for EDA and experiments
 ├── src/                  # Source code
+│   ├── autoencoder.py    # Auto Encoder model
+│   ├── clustering.py     # Clustering utilities
+│   ├── preprocessing.py  # Data preprocessing
+│   └── data_loader.py    # Data loading utilities
 ├── models/               # Trained models
 ├── results/              # Predictions and visualizations
+├── Dockerfile            # Docker image definition
+├── docker-compose.yml    # Docker Compose configuration
+├── docker-run.sh         # Docker helper script (Linux/Mac)
+├── docker-run.bat        # Docker helper script (Windows)
+├── Makefile              # Make commands for Docker
 ├── requirements.txt      # Python dependencies
 └── README.md            # Project documentation
 ```
 
+## Quick Start with Docker (Recommended)
+
+The easiest way to run this project is using Docker, which provides an isolated environment with all dependencies pre-installed.
+
+### Prerequisites
+- [Docker](https://www.docker.com/products/docker-desktop) installed on your system
+
+### Run Training Pipeline
+
+**Linux/Mac:**
+```bash
+./docker-run.sh build    # Build Docker image
+./docker-run.sh train    # Run training
+```
+
+**Windows:**
+```cmd
+docker-run.bat build     # Build Docker image
+docker-run.bat train     # Run training
+```
+
+**Or using Make:**
+```bash
+make build
+make train
+```
+
+**Or using Docker Compose:**
+```bash
+docker-compose up train
+```
+
+### View Results
+```bash
+ls results/              # Check output files
+ls results/plots/        # Check visualizations
+```
+
+For detailed Docker instructions, see [DOCKER.md](DOCKER.md)
+
 ## Setup
 
-### 1. Install Dependencies
+> **Note:** Using Docker (see above) is the recommended approach. The manual setup below is for advanced users who want to install dependencies directly on their system.
+
+### Manual Setup (Alternative to Docker)
+
+#### 1. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Get the Data
+#### 2. Get the Data
 The dataset is already included in the `Kaggle/` folder. Copy it to the data directory:
 ```bash
 cp Kaggle/*.csv data/raw/
